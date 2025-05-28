@@ -1,0 +1,63 @@
+name = "CutePanel"
+uuid = "12345678-1234-5678-1234-567812345678"
+authors = ["CutePanel Contributors <contributors@cutepanel.org>"]
+version = "0.1.0"
+
+[deps]
+Base64 = "2a0f44e3-6c83-55bd-87e4-b1978d98bd5f"
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+DataStructures = "864edb3b-99cc-5e75-8d2d-829cb0a9cfe8"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
+DotEnv = "4dc1fcf4-5e3b-5448-94ab-0c38ec0385c1"
+Flux = "587475ba-b771-5e3f-ad9e-33799f191a9c"
+HTTP = "cd3eb016-35fb-5094-929b-558a96fad6f3"
+JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
+JSON3 = "0f8b85d8-7281-11e9-16c2-39a750bddbf1"
+LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
+Logging = "56ddb016-857b-54e1-b83d-db4d58db5568"
+Pkg = "44cfe95a-1eb2-52ea-b672-e2afdf69b78f"
+Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
+Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
+Redis = "0cf705f9-a9e2-50d1-a699-2b372a39b750"
+SHA = "ea8e919c-243c-51af-8825-aaa63cd721ce"
+SQLite = "0aa819cd-b072-5ff4-a722-6bc24af294d9"
+Statistics = "10745b16-79ce-11e8-11f9-7d13ad32a3b2"
+TOML = "fa267f1f-6049-4f14-aa54-33bafae1ed76"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+TimeZones = "f269a46b-ccf7-5d73-abea-4c690281aa53"
+URIs = "5c2747f8-b7ea-4ff2-ba2e-563bfd36b1d4"
+UUIDs = "cf7118a7-6976-5b1a-9a39-7adc72f591a4"
+
+[sources]
+HTTP = {url = "https://github.com/JuliaWeb/HTTP.jl"}
+Redis = {url = "https://github.com/JuliaDatabases/Redis.jl"}
+
+[compat]
+Base64 = "1.11.0"
+BenchmarkTools = "1.6.0"
+DataStructures = "0.18.22"
+Dates = "1"
+DotEnv = "1.0.0"
+Flux = "0.16"
+HTTP = "1.9.14"
+JSON = "0.21.4"
+JSON3 = "1.14.2"
+LinearAlgebra = "1.11.0"
+Logging = "1"
+Pkg = "1.11.0"
+Printf = "1.11.0"
+SHA = "0.7.0"
+SQLite = "1.6"
+Statistics = "1.11.1"
+TOML = "1.0.3"
+TimeZones = "1.21.3"
+URIs = "1.5.2"
+UUIDs = "1.11.0"
+julia = ">=1.8"
+
+[extras]
+BenchmarkTools = "6e4b80f9-dd63-53aa-95a3-0cdb28fa8baf"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test", "BenchmarkTools"]

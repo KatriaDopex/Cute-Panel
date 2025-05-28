@@ -1,0 +1,25 @@
+{
+  "name": "cutepanel-cli",
+  "version": "0.1.0",
+  "description": "CutePanel Framework CLI - Command line interface for CutePanel framework",
+  "main": "apps/cli.jl",
+  "scripts": {
+    "start": "julia apps/cli.jl",
+    "test": "julia --project=test test/runtests.jl",
+    "build": "julia --project=build build/build.jl"
+  },
+  "dependencies": {
+    "ArgParse": "0.6.2",
+    "JSON": "0.21.3",
+    "Dates": "1.7.0",
+    "Printf": "0.5.10",
+    "ProgressMeter": "1.7.2",
+    "Crayons": "0.1.1",
+    "REPL": "0.7.0"
+  },
+  "devDependencies": {
+    "Test": "1.8.0"
+  },
+  "author": "CutePanel Team",
+  "license": "MIT"
+} 

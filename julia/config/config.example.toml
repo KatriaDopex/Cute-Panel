@@ -1,0 +1,74 @@
+# CutePanel Configuration Example
+# Copy this file to config.toml and update with your own values
+
+# Server configuration
+[server]
+host = "localhost"
+port = 8052
+workers = 4
+
+# Storage configuration
+[storage]
+local_db_path = "~/.cutepanel/cutepanel.sqlite"
+# Arweave configuration for decentralized storage
+arweave_wallet_file = ""  # Path to your Arweave wallet JSON file
+arweave_gateway = "arweave.net"
+arweave_port = 443
+arweave_protocol = "https"
+arweave_timeout = 20000
+arweave_logging = false
+
+# Blockchain configuration
+[blockchain]
+default_chain = "ethereum"
+# Replace these with your own RPC URLs
+rpc_urls.ethereum = "https://mainnet.infura.io/v3/YOUR_INFURA_API_KEY"  # Get your key at https://infura.io
+rpc_urls.polygon = "https://polygon-rpc.com"
+rpc_urls.solana = "https://api.mainnet-beta.solana.com"
+max_gas_price = 100.0  # Maximum gas price in GWEI
+max_slippage = 0.01    # Maximum slippage for swaps (1%)
+supported_chains = ["ethereum", "polygon", "solana"]
+
+# Swarm configuration
+[swarm]
+default_algorithm = "DE"  # Differential Evolution
+default_population_size = 50
+max_iterations = 1000
+parallel_evaluation = true
+
+# Security configuration
+[security]
+rate_limit = 100  # requests per minute
+max_request_size = 1048576  # 1MB
+enable_authentication = true # Set to true to enable API key authentication
+# Add a list of valid API keys. Clients must provide one of these in the X-API-Key header.
+# It is strongly recommended to change these default keys and use secure, randomly generated keys.
+api_keys = ["your-secure-api-key-1", "your-secure-api-key-2"]
+
+# Bridge configuration
+[bridge]
+port = 8053
+host = "localhost"
+
+# Wormhole bridge configuration
+[wormhole]
+enabled = true
+network = "testnet"  # "mainnet" or "testnet"
+
+# Ethereum network configuration for Wormhole
+[wormhole.networks.ethereum]
+enabled = true
+rpcUrl = "https://goerli.infura.io/v3/YOUR_INFURA_API_KEY"  # For testnet (Goerli)
+# rpcUrl = "https://mainnet.infura.io/v3/YOUR_INFURA_API_KEY"  # For mainnet
+
+# Solana network configuration for Wormhole
+[wormhole.networks.solana]
+enabled = true
+rpcUrl = "https://api.devnet.solana.com"  # For testnet (Devnet)
+# rpcUrl = "https://api.mainnet-beta.solana.com"  # For mainnet
+
+# Logging configuration
+[logging]
+level = "info"  # debug, info, warn, error
+format = "json"
+retention_days = 7

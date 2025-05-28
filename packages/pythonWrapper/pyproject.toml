@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cutepanel_wrapper"
+version = "0.1.0"
+authors = [
+  { name="CutePanel Contributors", email="contributors@example.cutepanel.org" },
+]
+description = "Python wrapper for interacting with the CutePanel backend."
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License", # Or your chosen license
+    "Operating System :: OS Independent",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = [
+    "httpx>=0.20",  # For making HTTP requests to the CutePanel API
+    "langchain-core>=0.1.0", # For BaseTool and Pydantic
+    # "langchain",    # Uncomment if full LangChain suite is needed
+    # "openai",       # For OpenAI LLM integration
+    # "anthropic",    # For Anthropic/Claude LLM integration
+    # "google-generativeai", # For Gemini
+    # Add other LLM provider SDKs or ADK as direct dependencies if needed
+]
+
+[project.urls]
+"Homepage" = "https://github.com/KatriaDopex/CutePanel" # Replace with actual URL
+"Bug Tracker" = "https://github.com/KatriaDopex/CutePanel/issues" # Replace
+
+# Optional: for development, testing
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "ruff", # Linter and formatter
+]

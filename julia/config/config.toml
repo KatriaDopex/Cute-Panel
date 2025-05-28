@@ -1,0 +1,112 @@
+# CutePanel Configuration
+
+[system]
+environment = "development"  # development, staging, production
+debug = true
+log_level = "info"          # debug, info, warn, error
+version = "0.1.0"
+
+[api]
+host = "127.0.0.1"
+port = 8052
+cors_enabled = true
+allowed_origins = ["*"]
+rate_limit = 100           # requests per minute
+timeout = 30               # seconds
+
+[api.websocket]
+enabled = true
+port = 8053
+heartbeat_interval = 30    # seconds
+
+[security]
+enable_ssl = true
+ssl_cert = "config/ssl/cert.pem"
+ssl_key = "config/ssl/key.pem"
+jwt_secret = "your-jwt-secret"
+jwt_expiry = 86400        # 24 hours in seconds
+
+[storage]
+type = "local"            # local, arweave, web3
+path = "data/storage"
+max_file_size = 10485760  # 10MB in bytes
+
+[storage.arweave]
+host = "arweave.net"
+port = 443
+protocol = "https"
+
+[storage.web3]
+ipfs_gateway = "https://ipfs.io/ipfs/"
+pinata_api_key = ""
+pinata_secret_key = ""
+
+[database]
+type = "sqlite"           # sqlite, postgres
+path = "data/cutepanel.db"
+pool_size = 5
+timeout = 30             # seconds
+
+[cache]
+type = "memory"          # memory, redis
+max_size = 1000         # entries
+ttl = 3600             # seconds
+
+[cache.redis]
+host = "localhost"
+port = 6379
+password = ""
+db = 0
+
+[queue]
+type = "memory"          # memory, redis
+max_size = 10000        # entries
+
+[blockchain]
+default_network = "ethereum"
+gas_limit = 300000
+gas_price_strategy = "medium"  # low, medium, high
+
+[blockchain.networks.ethereum]
+rpc_url = "https://mainnet.infura.io/v3/your-project-id"
+chain_id = 1
+explorer = "https://etherscan.io"
+
+[blockchain.networks.polygon]
+rpc_url = "https://polygon-rpc.com"
+chain_id = 137
+explorer = "https://polygonscan.com"
+
+[agents]
+max_agents = 100
+default_timeout = 300    # seconds
+health_check_interval = 60  # seconds
+
+[swarms]
+max_swarms = 10
+max_agents_per_swarm = 50
+optimization_timeout = 600  # seconds
+
+[bridges]
+default_bridge = "wormhole"
+timeout = 300            # seconds
+confirmations = 12       # blocks
+
+[bridges.wormhole]
+contract = "0x98f3c9e6E3fAce36bAAd05FE09d375Ef1464288B"
+guardian_rpc = "https://wormhole-v2-mainnet-api.certus.one"
+
+[bridges.axelar]
+gateway = "0x4F4495243837681061C4743b74B3eEdf548D56A5"
+gas_service = "0x2d5d7d31F671F86C782533cc367F14109a082712"
+
+[monitoring]
+enable_metrics = true
+metrics_port = 9090
+enable_tracing = true
+trace_sample_rate = 0.1   # 10% of requests
+
+[development]
+hot_reload = true
+debug_logging = true
+profile_endpoints = false 

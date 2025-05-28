@@ -1,0 +1,50 @@
+openapi: 3.1.0
+info:
+  title: CutePanel API
+  description: API for CutePanel backend server
+  version: 0.1.0
+
+servers:
+  - url: /api/v1
+  
+paths:
+  /agents:
+    get:
+      operationId: listAgents
+      summary: Get all agents
+      description: Retrieve a list of all agents
+      responses:
+        '200':
+          description: A list of agents
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Agent'
+    post:
+      operationId: createAgent
+      summary: Create a new agent
+      description: Create a new agent with the provided details
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Agent'
+      responses:
+        '201':
+          description: Agent created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Agent'
+
+components:
+  schemas:
+    Agent:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "agent123"
