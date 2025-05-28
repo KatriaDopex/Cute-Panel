@@ -1,0 +1,30 @@
+[package]
+name = "rust_cutepanel_signer_crate" # Crate name, can be different from lib name
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "rust_cutepanel_signer" # This will produce librust_cutepanel_signer.so/dylib/dll
+crate-type = ["cdylib"]
+
+[dependencies]
+ethers = { version = "2.0", features = ["legacy"] } # Umbrella crate, "legacy" for legacy tx signing
+hex = "0.4"
+# generic-array is useful for fixed-size arrays, like keys and nonces
+generic-array = "0.14" 
+# k256 for direct cryptographic operations if needed beyond LocalWallet
+k256 = { version = "0.13", features = ["ecdsa"] } 
+libc = "0.2"
+
+# Dependencies for secure key storage
+aes-gcm = "0.10"
+argon2 = "0.5"
+rand = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+# For directory/file operations
+directories = "5.0"
+# For base64 encoding/decoding of salt, nonce, ciphertext
+base64 = "0.21"
+# For ensuring secure permissions on key files/directories (platform-specific, might be complex)
+# For now, we'll rely on standard file operations and user diligence for directory permissions.

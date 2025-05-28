@@ -1,0 +1,26 @@
+{
+  "extends": "./packages/config/typescript-config/base.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "rootDir": "./",
+    "baseUrl": "./",
+    "paths": {
+      "@cutepanel/*": ["packages/*/src"]
+    },
+    "allowJs": true,
+    "checkJs": true,
+    "incremental": true
+  },
+  "include": [
+    "packages/*/src/**/*",
+    "apps/*/src/**/*",
+    "scripts/src"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "**/*.test.ts",
+    "**/*.spec.ts",
+    "**/*.d.ts"
+  ]
+}

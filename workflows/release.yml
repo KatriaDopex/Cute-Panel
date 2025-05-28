@@ -1,0 +1,278 @@
+name: CutePanel Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. 1.2.3)'
+        required: true
+      release_type:
+        description: 'Release type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+      prerelease:
+        description: 'Is this a prerelease?'
+        required: true
+        default: 'false'
+        type: boolean
+
+jobs:
+  verify:
+    name: Verify Release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Validate version format
+        run: |
+          if [[ ! "${{ github.event.inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format. Please use semantic versioning (e.g. 1.2.3)"
+            exit 1
+          fi
+
+      - name: Setup Julia
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: '1.10'
+      
+      # Run tests to make sure everything works before release
+      - name: Build Julia package
+        uses: julia-actions/julia-buildpkg@v1
+        
+      - name: Run tests
+        uses: julia-actions/julia-runtest@v1
+        with:
+          coverage: false
+
+  prepare-release:
+    name: Prepare Release
+    needs: verify
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Setup Git
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+      
+      - name: Set version
+        id: version
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Setting version to ${VERSION}"
+      
+      # Update version in package.json files
+      - name: Update package.json versions
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          
+          # Update root package.json
+          npm version $VERSION --no-git-tag-version
+          
+          # Update all package.json files in packages directory
+          for pkg in packages/*; do
+            if [ -f "$pkg/package.json" ]; then
+              cd $pkg
+              npm version $VERSION --no-git-tag-version
+              cd -
+            fi
+          done
+      
+      # Update version in Julia Project.toml
+      - name: Update Julia Project.toml
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          
+          # Update julia/Project.toml
+          sed -i "s/^version = \".*\"/version = \"$VERSION\"/" julia/Project.toml
+      
+      # Generate changelog
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.0.1
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Create CHANGELOG entry
+      - name: Update CHANGELOG.md
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          CHANGELOG="${{ steps.changelog.outputs.changelog }}"
+          DATE=$(date +%Y-%m-%d)
+          
+          if [ -f "CHANGELOG.md" ]; then
+            # Prepend new entry to existing CHANGELOG.md
+            sed -i "1i## v${VERSION} (${DATE})\n\n${CHANGELOG}\n\n" CHANGELOG.md
+          else
+            # Create new CHANGELOG.md
+            echo -e "# Changelog\n\n## v${VERSION} (${DATE})\n\n${CHANGELOG}\n" > CHANGELOG.md
+          fi
+      
+      # Commit version changes
+      - name: Commit changes
+        run: |
+          VERSION=${{ steps.version.outputs.version }}
+          git add .
+          git commit -m "chore: bump version to v${VERSION}"
+          git tag -a "v${VERSION}" -m "v${VERSION}"
+          git push origin main
+          git push origin "v${VERSION}"
+
+  build-and-publish:
+    name: Build and Publish
+    needs: prepare-release
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "v${{ needs.prepare-release.outputs.version }}"
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+      
+      - name: Install dependencies
+        run: npm ci
+      
+      - name: Build packages
+        run: npm run build
+      
+      # Publish to npm if not a prerelease
+      - name: Publish to npm
+        if: ${{ github.event.inputs.prerelease == 'false' }}
+        run: |
+          npm run publish-packages
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      # Publish to npm with prerelease tag if prerelease
+      - name: Publish to npm (prerelease)
+        if: ${{ github.event.inputs.prerelease == 'true' }}
+        run: |
+          npm run publish-packages -- --tag next
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      
+      # Build and publish Python package if not a prerelease
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      
+      - name: Build and publish Python package
+        if: ${{ github.event.inputs.prerelease == 'false' }}
+        run: |
+          cd packages/python-wrapper
+          pip install build twine
+          python -m build
+          python -m twine upload dist/*
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+      
+      # Build and publish Python package with prerelease classifier if prerelease
+      - name: Build and publish Python package (prerelease)
+        if: ${{ github.event.inputs.prerelease == 'true' }}
+        run: |
+          cd packages/python-wrapper
+          # Update version to add prerelease suffix
+          VERSION=${{ needs.prepare-release.outputs.version }}
+          sed -i "s/version=\"$VERSION\"/version=\"$VERSION.dev0\"/" setup.py
+          
+          pip install build twine
+          python -m build
+          python -m twine upload dist/*
+        env:
+          TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
+          TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
+  
+  create-github-release:
+    name: Create GitHub Release
+    needs: [prepare-release, build-and-publish]
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: "v${{ needs.prepare-release.outputs.version }}"
+      
+      # Generate changelog
+      - name: Generate changelog
+        id: changelog
+        uses: metcalfc/changelog-generator@v4.0.1
+        with:
+          myToken: ${{ secrets.GITHUB_TOKEN }}
+      
+      # Create GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "v${{ needs.prepare-release.outputs.version }}"
+          name: "v${{ needs.prepare-release.outputs.version }}"
+          body: ${{ steps.changelog.outputs.changelog }}
+          draft: false
+          prerelease: ${{ github.event.inputs.prerelease }}
+          files: |
+            LICENSE
+            README.md
+            CHANGELOG.md
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  
+  notify:
+    name: Notification
+    needs: [prepare-release, create-github-release]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Notify success
+        if: ${{ success() }}
+        run: |
+          VERSION=${{ needs.prepare-release.outputs.version }}
+          TYPE="${{ github.event.inputs.release_type }}"
+          PRERELEASE="${{ github.event.inputs.prerelease }}"
+          
+          if [ "$PRERELEASE" == "true" ]; then
+            RELEASE_TYPE="prerelease"
+          else
+            RELEASE_TYPE="release"
+          fi
+          
+          echo "✅ CutePanel v${VERSION} ${TYPE} ${RELEASE_TYPE} successfully published!"
+      
+      - name: Notify failure
+        if: ${{ failure() }}
+        run: |
+          VERSION=${{ needs.prepare-release.outputs.version }}
+          echo "❌ CutePanel v${VERSION} release failed! Check the job logs for details."
