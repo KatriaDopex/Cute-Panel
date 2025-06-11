@@ -28,9 +28,9 @@
 
 ## ⚪ Welcome to Cute Panel
 
-**Cute Panel** is an autonomous AI system designed to manage and interact on social media—starting with Twitter—with minimal human input. It can post, reply, track ongoing conversations, and handle microtransactions using cryptocurrency. The long-term aim is to expand support across platforms and improve how automated accounts engage with real communities.
+**Cute Panel** is a fully autonomous AI agent, built from the ground up in TypeScript for its robust type safety and modern developer tooling. Designed to run independently with minimal human input, it can post updates, follow and engage in conversations, respond to mentions, and even handle small-scale Solana transactions.
 
-The project is developed in **TypeScript** for its reliability, strong typing, and compatibility with modern tooling.
+What sets Cute Panel apart is its goal: to make automated accounts not just reactive, but genuinely participatory—capable of integrating into real online communities in a meaningful way. While Twitter is the first target platform, the system is designed to scale across multiple social channels in the future.
 
 <br>
 
@@ -67,32 +67,26 @@ The project is developed in **TypeScript** for its reliability, strong typing, a
 
 ## Overview
 
-Cute Panel is built to act as a self-sufficient agent with three main responsibilities:
+**Cute Panel** is an autonomous AI system written entirely in **TypeScript**, built to run social accounts without human intervention. It doesn’t just schedule posts — it actively participates in conversations, follows trends, interacts with users, and moves tokens on-chain when the moment calls for it.
 
-### 1. Social Media Automation  
-The agent can:
-- Monitor Twitter mentions, replies, and DMs  
-- Post original tweets based on prompt-driven logic  
-- Reply with context-aware responses using an integrated LLM (Claude)  
-- Track hashtags and topics of interest (e.g., $BTB)  
-- Engage with users through replies, likes, and threads
 
-### 2. Cryptocurrency Interaction  
-The bot supports basic on-chain actions:
-- Creates and manages an Ethereum wallet  
-- Sends small crypto tips under defined rules  
-- Interfaces with blockchain APIs via `ethers.js`  
-- Logs transaction history and recipient data  
-- Keeps keys and sensitive data encrypted and isolated  
+At launch, it's wired into Twitter and plugged into Solana, but both the social and blockchain layers are designed to be swappable. Whether it’s replying to a meme thread or tipping someone a few $PANEL tokens, Cute Panel runs the full loop on its own.
 
-> While we're launching this alongside the $PANEL token on Solana, the current implementation is Ethereum-based and platform-agnostic.
 
-### 3. Scalable Architecture  
-The codebase is structured for adaptability:
-- Supports multiple LLM providers and prompt configurations  
-- Easily extendable to additional platforms  
-- Designed for external contributions and modular development  
-- Can integrate with multiple chains and token types
+Some things the AI agent can already do:
+
+- Posts original tweets using prompt logic and LLMs (Claude)  
+- Monitors mentions, DMs, and trending hashtags 
+- Replies to users with contextual awareness  
+- Tracks conversations it’s involved in  
+- Sends out small crypto tips via its own Solana wallet  
+- Keeps keys encrypted and isolated at runtime  
+- Logs on-chain actions with traceable history  
+
+The architecture is intentionally modular — supporting multiple models, prompt styles, token standards, and platforms. The goal isn’t just one clever bot; it’s a framework for running persistent, intelligent agents in public.
+
+> Cute Panel ships alongside the $PANEL token on **Solana**, but is built with multi-chain, multi-platform expansion in mind.
+
 
 ---
 
@@ -110,26 +104,27 @@ The codebase is structured for adaptability:
 
 ## Features
 
-- **TypeScript Backend**  
-  Built with modern async patterns, type safety, and full access to the npm ecosystem.
+- **Modern TypeScript Backend**  
+  Built with async-first patterns, strong typing, and full access to the npm ecosystem. Clean, predictable, and production-ready.
 
-- **LLM Integration**  
-  Utilizes Claude API to handle message generation, with support for context tracking and prompt customization.
+- **LLM-Powered Messaging**  
+  Integrates Claude for generating posts, replies, and threads — with support for memory-like context handling and custom prompt logic.
 
-- **Secure Key Management**  
-  - All sensitive information is stored via environment variables  
-  - Private keys are never exposed in the codebase  
-  - Basic encryption and access control included  
+- **Encrypted Key Handling**  
+  - Secrets are loaded via environment variables  
+  - Private keys are never written to disk or exposed  
+  - Lightweight encryption and scoped runtime access  
 
-- **Event-Driven Workflow**  
-  - Polls for new Twitter events on an interval  
-  - Processes each item through a decision engine  
-  - Implements retries, backoff strategies, and rate-limit handling  
+- **Reactive, Event-Based Flow**  
+  - Monitors Twitter activity at regular intervals  
+  - Routes events through a decision engine with memory  
+  - Handles retries, backoff, and rate limits gracefully  
 
-- **Safety & Moderation**  
-  - Prompt filters and response checks to avoid inappropriate output  
-  - Basic anti-spam logic  
-  - Activity logging for transparency and debugging
+- **Built-in Safety & Moderation**  
+  - Filters for prompt safety and language boundaries  
+  - Spam-avoidance logic for reply control  
+  - Logs actions for traceability and debugging
+
 
 ---
 
@@ -137,16 +132,14 @@ The codebase is structured for adaptability:
 
 ```
 src/
-├── index.ts              # Entry point
-├── services/             # Core logic modules
-│   ├── TwitterApi.ts     # Twitter integration
-│   ├── LLMClient.ts      # Language model integration
-│   └── WalletManager.ts  # Wallet and transaction handling
-└── types/                # Shared TypeScript types
-    └── index.ts
+├── index.ts              # Main application entry point
+├── services/            # Core services
+│   ├── TwitterApi.ts    # Twitter API integration
+│   ├── LLMClient.ts     # Claude API integration
+│   └── WalletManager.ts # Ethereum wallet management
+└── types/              # TypeScript type definitions
+    └── index.ts        # Shared types and interfaces
 ```
-
----
 
 ## Setup
 
